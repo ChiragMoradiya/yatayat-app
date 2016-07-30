@@ -16,11 +16,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-submenu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+
 <link rel="import" href="yatayat-icons.html">
 <link rel="import" href="yatayat-events.html">
 <link rel="import" href="yatayat-event-page-behavior.html">
@@ -29,7 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
 
-    <style include="iron-positioning">
+    <style include="iron-flex iron-positioning">
 
       :host {
         display: block;
@@ -44,16 +53,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
-
-      .drawer-list {
-        margin: 0 20px;
+      
+      paper-menu {
+        --paper-menu: {
+          margin: 0;
+          padding: 0;
+        }
       }
+      
+      paper-item {
+        position: relative;
+      }
+
       .drawer-list a {
         display: block;
         padding: 0 16px;
-        line-height: 40px;
+        line-height: 48px;
         text-decoration: none;
+        width: 100%;
         color: var(--app-secondary-color);
+        box-sizing: border-box;
       }
       .drawer-list a.iron-selected {
         color: black;
@@ -63,16 +82,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-left: 32px;
       }
       
-      #eventDrawer {
-        display: none;
+      .event-drawer {
+        transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+        transition: transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+        will-change: transform;
+        visibility: hidden;
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
       }
       
-      :host([event-id]) #eventDrawer {
-        display: block;
-      }
-      
-      :host([event-id]) #mainDrawer {
-        display: none;
+      :host([event-id]) .event-drawer {
+        visibility: visible;
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
       } 
 
 
@@ -86,26 +108,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         tail="{{subroute}}"></app-route>
 
     <app-drawer-layout fullbleed>
-
       <!-- Drawer content -->
       <app-drawer>
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" id="mainDrawer">
-          <a name="users" href="/users">Users</a>
-          <a name="fields" href="/fields">Fields</a>
-          <a name="events" href="/events">Events</a>
-        </iron-selector>
-        
-        <iron-selector attr-for-selected="name" class="drawer-list" role="navigation" id="eventDrawer">
-          <a name="general" href="/events/{{eventId}}/general">General</a>
-          <a name="fields" href="/events/{{eventId}}/fields">Fields</a>
-          <a name="responsibles" href="/events/{{eventId}}/responsibles">Responsibles</a>
-          <a name="routes" href="/events/{{eventId}}/routes">Routes</a>
-          <a name="vehicles" href="/events/{{eventId}}/vehicles">Vehicles</a>
-          <a name="traffic-map" href="/events/{{eventId}}/traffic/map">Traffic Map</a>
-          <a name="traffic-dashboard" href="/events/{{eventId}}/traffic/dashboard">Traffic Dashboard</a>
-          <a name="admins" href="/events/{{eventId}}/admins">Admins</a>
-        </iron-selector>
+        <div class="fit layout vertical" style="top: 120px; bottom: 120px;">
+          <app-toolbar class="flex-none">
+            <a href="/">Yatayat Logo</a>
+          </app-toolbar>
+          <div class="multi-drawer flex relative">
+            <div class="main-drawer fit">
+              <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" id="mainDrawer">
+                <paper-item name="users"><a class="fit" href="/users">Users</a></paper-item>
+                <paper-item name="fields"><a class="fit" href="/fields">Fields</a></paper-item>
+                <paper-item name="events"><a class="fit" href="/events">Events</a></paper-item>
+              </paper-menu>
+            </div>
+            <div class="event-drawer fit">
+              <paper-menu attr-for-selected="name" class="drawer-list" role="navigation" id="eventDrawer">
+                <paper-item name="general"><a class="fit" href="/events/{{eventId}}/general">General</a></paper-item>
+                <paper-item name="fields"><a class="fit" href="/events/{{eventId}}/fields">Fields</a></paper-item>
+                <paper-item name="responsibles"><a class="fit" href="/events/{{eventId}}/responsibles">Responsibles</a></paper-item>
+                <paper-item name="routes"><a class="fit" href="/events/{{eventId}}/routes">Routes</a></paper-item>
+                <paper-item name="vehicles"><a class="fit" href="/events/{{eventId}}/vehicles">Vehicles</a></paper-item>
+                <paper-item class="menu-trigger" disabled>Traffic</paper-item>
+                <paper-item name="traffic-map"><a href="/events/{{eventId}}/traffic/map">Traffic Map</a></paper-item>
+                <paper-item name="traffic-dashboard"><a href="/events/{{eventId}}/traffic/dashboard">Traffic Dashboard</a></paper-item>
+                <paper-item name="admins"><a class="fit" href="/events/{{eventId}}/admins">Admins</a></paper-item>
+              </paper-menu>
+            </div>
+          </div>
+        </div>
       </app-drawer>
 
       <!-- Main content -->
@@ -114,16 +145,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header fixed>
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div title>My App</div>
+            <a href="/">Home </a>
+            <div title>App</div>
           </app-toolbar>
-<!--           <app-toolbar> -->
-<!--             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button> -->
-<!--             <div title>My App</div> -->
-<!--           </app-toolbar> -->
-<!--           <app-toolbar> -->
-<!--             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button> -->
-<!--             <div title>My App</div> -->
-<!--           </app-toolbar> -->
         </app-header>
 
         <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="active" id="pages">
@@ -181,7 +205,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _updateDrawerMenuSelection : function(event) {
         this.$.eventDrawer.set('selected', event.detail.name);
       }
-      
     });
 
   </script>
