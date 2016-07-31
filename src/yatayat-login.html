@@ -1,0 +1,66 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/google-signin/google-signin.html">
+
+<dom-module id="yatayat-login">
+
+  <template>
+
+    <style>
+      :host {
+        display: block;
+        padding: 10px;
+        background-color: #eee;
+      }
+    </style>
+    
+    <google-signin client-id="34624700188-shojqqgimp327d2gnp0hbqt8il3hb3qt.apps.googleusercontent.com" 
+                raised on-click="_onSignInClick" id="google"
+                on-google-signin-aware-success="_setAccessTokenInCookie"
+                on-google-signed-out="_clearAccessTokenFromCookie"
+                signed-in="{{signedIn}}"
+                scopes="profile"></google-signin>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'yatayat-login',
+      
+      properties: {
+        signedIn : {
+          type: Boolean,
+          notify: true
+        }
+      },
+
+      _setAccessTokenInCookie : function(e) {
+        this._setCookie('gat', e.detail.access_token, e.detail.expires_at);
+      },
+      
+      _clearAccessTokenFromCookie: function(e) {
+        this._setCookie('gat', '', new Date().getTime());
+      },
+      
+      _setCookie: function(name, value, expiresAt) {
+        var date = new Date(expiresAt);
+        var expires = "; expires="+date.toGMTString();
+        document.cookie = name+"="+value+expires+"; path=/";
+    }
+
+    });
+
+  </script>
+
+</dom-module>

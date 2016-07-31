@@ -24,6 +24,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="yatayat-icons.html">
 <link rel="import" href="yatayat-events.html">
 <link rel="import" href="yatayat-event-page-behavior.html">
+<link rel="import" href="yatayat-login.html">
 
 <dom-module id="yatayat-app">
 
@@ -79,6 +80,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <app-location route="{{route}}"></app-location>
+    <yatayat-login class="fit" signed-in="{{signedIn}}"></yatayat-login>
+    <template is="dom-if" if="{{signedIn}}">
     <app-route
         route="{{route}}"
         pattern="/:page"
@@ -115,15 +118,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div title>My App</div>
+            <google-signin client-id="34624700188-shojqqgimp327d2gnp0hbqt8il3hb3qt.apps.googleusercontent.com" 
+                raised on-click="_onSignInClick" id="google"
+                on-google-signin-aware-success="_setAccessTokenInCookie"
+                on-google-signed-out="_clearAccessTokenFromCookie"
+                signed-in="{{signedIn}}"></google-signin>
           </app-toolbar>
-<!--           <app-toolbar> -->
-<!--             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button> -->
-<!--             <div title>My App</div> -->
-<!--           </app-toolbar> -->
-<!--           <app-toolbar> -->
-<!--             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button> -->
-<!--             <div title>My App</div> -->
-<!--           </app-toolbar> -->
         </app-header>
 
         <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="active" id="pages">
@@ -135,6 +135,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header-layout>
 
     </app-drawer-layout>
+    </template>
+    
 
   </template>
 
@@ -179,7 +181,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       
       _updateDrawerMenuSelection : function(event) {
-        this.$.eventDrawer.set('selected', event.detail.name);
+//         this.$.eventDrawer.set('selected', event.detail.name);
       }
       
     });
