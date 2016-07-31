@@ -1,0 +1,17 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/yatayat-app.html",
+  "fragments": [
+    "src/yatayat-users.html",
+    "src/yatayat-fields.html",
+    "src/yatayat-events-list.html",
+    "src/yatayat-event-general.html",
+    "src/yatayat-event-fields.html",
+    "src/yatayat-event-responsibles.html",
+    "src/yatayat-event-vehicles.html",
+    "src/yatayat-event-routes.html",
+    "src/yatayat-event-traffic-map.html",
+    "src/yatayat-event-traffic-dashboard.html",
+    "src/yatayat-event-admins.html",
+  ]
+}

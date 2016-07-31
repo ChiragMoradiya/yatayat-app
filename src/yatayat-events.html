@@ -1,0 +1,122 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="yatayat-event-traffic.html">
+
+<dom-module id="yatayat-events">
+  <template>
+    <app-route
+        route="{{route}}"
+        pattern="/:eventId/:page"
+        active="{{subPageActive}}"
+        data="{{routeData}}"
+        tail="{{eventpageroute}}"></app-route>
+        
+    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="active" id="pages">
+      <yatayat-events-list name="events-list" route="{{subroute}}" ></yatayat-events-list>
+      <yatayat-event-general name="general" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-general>
+      <yatayat-event-fields name="fields" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-fields>
+      <yatayat-event-responsibles name="responsibles" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-responsibles>
+      <yatayat-event-vehicles name="vehicles" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-vehicles>
+      <yatayat-event-routes name="routes" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-routes>
+      <yatayat-event-traffic name="traffic" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-traffic>
+      <yatayat-event-admins name="admins" route="{{subroute}}"
+         event-id="{{routeData.eventId}}"></yatayat-event-admins>
+    </iron-pages>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'yatayat-events',
+      
+      properties: {
+        
+        active : {
+          type: Boolean,
+        },
+        
+        eventId : {
+          type: String,
+          computed: '_getEventId(active, routeData.eventId)',
+          notify: true
+        },
+        
+        route : {
+          type: Object
+        },
+        
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged'
+        },
+        
+        subroute : {
+          type: Object
+        }
+
+      },
+
+      observers: [
+        '_setPage(active, subPageActive)',
+        '_setPage(active, subPageActive, routeData.eventId, routeData.page, eventpageroute)'
+      ],
+      
+      _getEventId: function(active, subPageActive, routeDataEventId) {
+        return active && subPageActive && this.routeData.eventId ? this.routeData.eventId : null;
+      },
+
+      _setPage: function(active, subPageActive, routeDataEventId, routeDataPage) {
+        if(!active) {
+          return;
+        }
+        
+        
+        this.debounce('_setPage', function(){
+          var routeDataPage = this.routeData ? this.routeData.page : '';
+          var eventId = this.routeData ? this.routeData.eventId : null;
+          
+          // If we want to forward 'edit' URL to list page. e.g. /events/edit/{id}
+  //         var page = !subPageActive || eventId == 'edit' ? 'events-list' : routeDataPage;
+          
+          //Otherwise, if we want to foward 'edit' to genera page. e.g. /events/{id}/general/edit
+          var page = !subPageActive ? 'events-list' : routeDataPage;
+          
+          this.set('page', page);
+          this.set('subroute', (page === 'events-list') ? this.route : this.eventpageroute);
+        });
+      },
+      
+      _pageChanged: function(page) {
+        // load page import on demand.
+        if(page !== 'events-list') {
+          page = 'event-' + page;
+        }
+        this.importHref(
+          this.resolveUrl('yatayat-' + page + '.html'), null, null, true);
+      }
+      
+
+    });
+
+  </script>
+
+</dom-module>

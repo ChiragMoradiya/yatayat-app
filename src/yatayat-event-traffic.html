@@ -1,0 +1,73 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<dom-module id="yatayat-event-traffic">
+  <template>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}" id="route"></app-route>
+    <h3>eventId:{{route.path}}</h3>
+    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="active" id="pages">
+      <yatayat-event-traffic-map name="traffic-map"
+         event-id="{{eventId}}"></yatayat-event-traffic-map>
+      <yatayat-event-traffic-dashboard name="traffic-dashboard"
+         event-id="{{eventId}}"></yatayat-event-traffic-dashboard>
+    </iron-pages>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'yatayat-event-traffic',
+      
+      properties: {
+
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged'
+        },
+        
+        eventId : {
+          type: String,
+        }
+
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page)'
+      ],
+      
+      _routePageChanged: function(page) {
+        var page = page ? 'traffic-' + page : 'traffic-map';
+        this.set('page', page);
+      },
+
+      _pageChanged: function(page) {
+        // load page import on demand.
+        var self = this;
+        this.importHref(
+          this.resolveUrl('yatayat-event-' + page + '.html'), null, null, true);
+      },
+      
+
+    });
+
+  </script>
+
+</dom-module>

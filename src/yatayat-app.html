@@ -1,0 +1,189 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="yatayat-icons.html">
+<link rel="import" href="yatayat-events.html">
+<link rel="import" href="yatayat-event-page-behavior.html">
+
+<dom-module id="yatayat-app">
+
+  <template>
+
+    <style include="iron-positioning">
+
+      :host {
+        display: block;
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+      }
+
+      app-header {
+        background-color: var(--app-primary-color);
+        color: #fff;
+      }
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        line-height: 40px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+      }
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+      .drawer-list a.subroute {
+        padding-left: 32px;
+      }
+      
+      #eventDrawer {
+        display: none;
+      }
+      
+      :host([event-id]) #eventDrawer {
+        display: block;
+      }
+      
+      :host([event-id]) #mainDrawer {
+        display: none;
+      } 
+
+
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <app-drawer-layout fullbleed>
+
+      <!-- Drawer content -->
+      <app-drawer>
+        <app-toolbar>Menu</app-toolbar>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" id="mainDrawer">
+          <a name="users" href="/users">Users</a>
+          <a name="fields" href="/fields">Fields</a>
+          <a name="events" href="/events">Events</a>
+        </iron-selector>
+        
+        <iron-selector attr-for-selected="name" class="drawer-list" role="navigation" id="eventDrawer">
+          <a name="general" href="/events/{{eventId}}/general">General</a>
+          <a name="fields" href="/events/{{eventId}}/fields">Fields</a>
+          <a name="responsibles" href="/events/{{eventId}}/responsibles">Responsibles</a>
+          <a name="routes" href="/events/{{eventId}}/routes">Routes</a>
+          <a name="vehicles" href="/events/{{eventId}}/vehicles">Vehicles</a>
+          <a name="traffic-map" href="/events/{{eventId}}/traffic/map">Traffic Map</a>
+          <a name="traffic-dashboard" href="/events/{{eventId}}/traffic/dashboard">Traffic Dashboard</a>
+          <a name="admins" href="/events/{{eventId}}/admins">Admins</a>
+        </iron-selector>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+
+        <app-header fixed>
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div title>My App</div>
+          </app-toolbar>
+<!--           <app-toolbar> -->
+<!--             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button> -->
+<!--             <div title>My App</div> -->
+<!--           </app-toolbar> -->
+<!--           <app-toolbar> -->
+<!--             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button> -->
+<!--             <div title>My App</div> -->
+<!--           </app-toolbar> -->
+        </app-header>
+
+        <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="active" id="pages">
+          <yatayat-users name="users" route="{{subroute}}"  class="fit"></yatayat-users>
+          <yatayat-fields name="fields" route="{{subroute}}"></yatayat-fields>
+          <yatayat-events name="events" route="{{subroute}}" event-id="{{eventId}}"></yatayat-events>
+        </iron-pages>
+
+      </app-header-layout>
+
+    </app-drawer-layout>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'yatayat-app',
+
+      properties: {
+
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged'
+        },
+        
+        eventId : {
+          type: String,
+          reflectToAttribute: true
+        }
+
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page)'
+      ],
+      
+      listeners: {
+        'event-page-opened' : '_updateDrawerMenuSelection'
+      },
+      
+      _routePageChanged: function(page) {
+        this.page = page || 'events';
+      },
+
+      _pageChanged: function(page) {
+        // load page import on demand.
+        var self = this;
+        this.importHref(
+          this.resolveUrl('yatayat-' + page + '.html'), null, null, true);
+      },
+      
+      _updateDrawerMenuSelection : function(event) {
+        this.$.eventDrawer.set('selected', event.detail.name);
+      }
+      
+    });
+
+  </script>
+
+</dom-module>

@@ -1,0 +1,133 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="yatayat-users">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      .card {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        margin: 24px;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #757575;
+      }
+      .circle {
+        display: inline-block;
+        height: 64px;
+        width: 64px;
+        border-radius: 50%;
+        background: #ddd;
+        line-height: 64px;
+        font-size: 30px;
+        color: #555;
+        text-align: center;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 16px 0;
+        color: #212121;
+      }
+    </style>
+    
+    
+    <app-route
+        route="{{route}}"
+        pattern="/:name"
+        data="{{routeLevel1}}"
+        tail="{{subroute}}"></app-route>
+    <app-route
+        route="{{subroute}}"
+        pattern="/:id"
+        data="{{routeLevel2}}"></app-route>
+        
+        
+    <app-header-layout has-scrolling-region >
+    <app-header fixed condenses effects="waterfall">
+      <app-toolbar>
+        <div main-title>Users</div>
+      </app-toolbar>
+    </app-header>
+    <div class="card">
+        <div class="circle">1</div>
+        <h1>Users</h1>
+        <h3>Popup:{{popup}}, userId:{{userId}}</h3>
+        <p>Ut labores minimum atomorum pro. Laudem tibique ut has.
+        <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
+      </div>
+</app-header-layout>
+    
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'yatayat-users',
+      
+      properties: {
+        eventId: {
+          type:String
+        },
+        
+        popup : {
+          type: String,
+          reflectToAttribute: true
+        },
+        
+        userId : {
+          type: String,
+          reflectToAttribute : true
+        },
+        
+        route : {
+          type: Object
+        },
+        
+        routeLevel1: {
+          type: Object
+        },
+        
+        routeLevel2: {
+          type: Object
+        },
+        
+        subroute: {
+          type: Object
+        }
+      },
+      
+      
+      observers: [
+                  '_route1Changed(routeLevel1.name)',
+                  '_route2Changed(routeLevel2.id)'
+                ],
+                
+      _route1Changed: function(popupName) {
+        this.set('popup', popupName);
+      },
+      
+      _route2Changed : function(userId) {
+        this.userId = userId;
+      }
+
+    });
+
+  </script>
+
+</dom-module>
