@@ -9,6 +9,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <dom-module id="yatayat-users">
 
@@ -61,14 +64,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-toolbar>
         <div main-title>Users</div>
       </app-toolbar>
+      
+      <paper-input id="search" value="{{searchValue}}"></paper-input>
+        <iron-ajax auto url="/api/users" params="{{_params(searchValue)}}" id="ajaxUsers"
+            last-response="{{users}}" loading="{{loading}}" debounce-duration="300">
+        </iron-ajax>
+        <template is="dom-if" if="{{loading}}">
+          <div>Loading...</div>
+        </template>
+        <template is="dom-repeat" items="{{users}}" as="user">
+          <h4>{{user.name}}</h4>
+        </template>
+        <paper-button on-click="_onFetch">Fetch</paper-button>
     </app-header>
-    <div class="card">
-        <div class="circle">1</div>
-        <h1>Users</h1>
-        <h3>Popup:{{popup}}, userId:{{userId}}</h3>
-        <p>Ut labores minimum atomorum pro. Laudem tibique ut has.
-        <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-      </div>
 </app-header-layout>
     
 
@@ -88,6 +96,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         popup : {
           type: String,
           reflectToAttribute: true
+        },
+        
+        loading : {
+          type: Boolean,
+          value : false
+        },
+        
+        users : {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        
+        searchValue : {
+          type: String
         },
         
         userId : {
@@ -124,6 +148,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       
       _route2Changed : function(userId) {
         this.userId = userId;
+      },
+      
+      _onFetch : function() {
+        this.$.ajaxUsers.generateRequest();
+      },
+      
+      _params : function(searchValue) {
+        return {q: searchValue};
       }
 
     });
