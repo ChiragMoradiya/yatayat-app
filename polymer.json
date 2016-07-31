@@ -12,6 +12,6 @@
     "src/yatayat-event-routes.html",
     "src/yatayat-event-traffic-map.html",
     "src/yatayat-event-traffic-dashboard.html",
-    "src/yatayat-event-admins.html",
+    "src/yatayat-event-admins.html"
   ]
 }
